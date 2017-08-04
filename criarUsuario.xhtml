@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="template/template.xhtml">
+    <!--
+    Opção Metadata acrescentada para agilizar o carregamento da página, assim
+    o picklist só é populado no request HTTP, ou Ajax.
+    -->
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{usuariosTarefasBean.carregaEmpresas()}"/>
+    </f:metadata>
+
+
+    <ui:define name="conteudo">
+
+        <h:form id="frmCriaUsuario">
+            <p:growl id="msgCriaUsuario" />
+            <p:panelGrid columns="2">
+
+                <f:facet name="header">Criar Usuário</f:facet>
+
+
+                <p:column><p:outputLabel value="E-mail:"/></p:column>
+                <p:column>
+                    <p:inputText id="email" validatorMessage="Endereço de e-mail inválido." 
+                                 required="true" requiredMessage="Informe um endereço de e-mail."
+                                 value="#{usuariosTarefasBean.email}">
+                        <p:watermark for="email" value="example@example.com"/>
+                        <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+                    </p:inputText>
+                </p:column>
+
+                <p:column><p:outputLabel value="Senha:"/></p:column>
+                <p:column>
+                    <p:password id="senha" value="#{usuariosTarefasBean.senha}" feedback="true"
+                                promptLabel="Informe a senha" weakLabel="Fraco"
+                                goodLabel="Médio" strongLabel="Forte"
+                                required="true" requiredMessage="Informe a senha."/>
+                </p:column>
+
+                <p:column><p:outputLabel value="Fornecedor:" /></p:column>
+                <p:column>
+                    <p:selectOneMenu id="codFornecedor" value="#{cadClientesFornecBean.fornecedor}" 
+                                     required="true" requiredMessage="Informe um fornecedor." effect="drop">
+                        <f:selectItem itemLabel="Selecione um Fornecedor" itemValue="" />
+                        <f:selectItems value="#{cadClientesFornecBean.fornecedores}" />
+                    </p:selectOneMenu>
+                </p:column>
+
+                <p:column></p:column>
+                <p:column>
+                    <p:panelGrid columns="1">
+                        <f:facet name="header">Informe uma empresa</f:facet>
+                        
+                        <p:pickList value="#{usuariosTarefasBean.empresas}" var="empresas" itemLabel="#{empresas}" 
+                                    itemValue="#{empresas}" effect="drop" required="true" 
+                                    requiredMessage="Informe pelo menos uma empresa."
+                                    styleClass="picklistCriaUsuario"/>
+                    </p:panelGrid>
+                </p:column>
+
+                <p:column></p:column>
+                <p:column>
+                    <p:commandButton value="Criar" style="width: 140px" icon="ui-icon-disk"
+                                     actionListener="#{usuariosTarefasBean.criarUsuario}" 
+                                     update="msgCriaUsuario,:users:tableUsers" />
+                </p:column>
+            </p:panelGrid>
+        </h:form>
+        <br/><br/>
+
+
+
+
+
+        <!--Tabela de usuários cadastrados-->
+        <h:form id="users">
+            <p:dataTable var="users" value="#{usuariosTarefasBean.usuariosCadastrados}" 
+                         id="tableUsers" emptyMessage="Nenhum usuário cadastrado.">
+                <f:facet name="header">Usuários Cadastrados</f:facet>
+
+                <p:column headerText="E-mail" style="width: 20%">
+                    <p:outputLabel value="#{users.email}"/>
+                </p:column>
+
+                <p:column headerText="Fornecedor" style="width:40%" >
+                    <p:outputLabel value="#{users.fornecedor.codClienteFornec} - 
+                                  #{users.fornecedor.nomeFantasia} / 
+                                  #{users.fornecedor.tabMunicipios.municipio} / 
+                                  #{users.fornecedor.tabMunicipios.siglaUf}"/>
+                </p:column>
+                
+                <p:column headerText="Empresas" style="width: 10%">
+                    <p:outputLabel value="#{usuariosTarefasBean.usuariosEmpresas[users.email]}"/>
+                </p:column>
+
+                <p:column headerText="Ativo">
+                    <p:outputLabel value="#{users.ativo eq 'S' ? 'SIM' : 'NÃO'}"/>
+                </p:column>
+
+                <p:column headerText="Opções" colspan="3" style="text-align: center">
+                    <p:commandButton id="btnEditar" 
+                                     icon="ui-icon-pencil" 
+                                     oncomplete="PF('dlgEditar').show()"  
+                                     update=":users:dlgInf4">
+                        <f:setPropertyActionListener target="#{usuariosTarefasBean.selectedUsuario}" value="#{users}" for="btnEditar"/> 
+                    </p:commandButton>
+                    <p:tooltip for="btnEditar" showEffect="clip" value="Editar este usuário."/>
+
+                    <p:commandButton id="btnInativar" 
+                                     icon="ui-icon-cancel" 
+                                     oncomplete="PF('dlgAtivacao').show()"  
+                                     update=":users:dlgInf1">
+                        <f:setPropertyActionListener target="#{usuariosTarefasBean.selectedUsuario}" value="#{users}" for="btnInativar"/> 
+                    </p:commandButton>
+                    <p:tooltip for="btnInativar" showEffect="clip" value="Inativar/Ativar este usuário."/>
+
+                    <p:commandButton id="btnResetarSenha" 
+                                     icon="ui-icon-refresh" 
+                                     oncomplete="PF('dlgReiniciarSenha').show()"  
+                                     update=":users:dlgInf2">
+                        <f:setPropertyActionListener target="#{usuariosTarefasBean.selectedUsuario}" value="#{users}" for="btnResetarSenha"/> 
+                    </p:commandButton>
+                    <p:tooltip for="btnResetarSenha" showEffect="clip" value="Redefinir a senha deste usuário."/>
+
+                    <p:commandButton id="btnExcluir" 
+                                     icon="ui-icon-trash" 
+                                     oncomplete="PF('dlgExcluir').show()" 
+                                     update=":users:dlgInf3" >
+                        <f:setPropertyActionListener target="#{usuariosTarefasBean.selectedUsuario}" value="#{users}" for="btnExcluir"/> 
+                    </p:commandButton>
+
+                    <p:tooltip for="btnExcluir" showEffect="clip" value="Excluir este usuário."  />
+                </p:column>
+            </p:dataTable>
+
+
+            <!--Diálogo Ativação/Inativação-->
+            <p:dialog header="Confirmação" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgAtivacao">
+                <p:outputPanel id="dlgInf1" style="text-align: center">
+                    <h:outputText value="O usuário '#{usuariosTarefasBean.selectedUsuario.email}' está #{usuariosTarefasBean.selectedUsuario.ativo=='S'?'ATIVO':'INATIVO'}. Tem certeza que deseja #{usuariosTarefasBean.selectedUsuario.ativo=='S'?'INATIVAR':'ATIVAR'} este usuário?"/> <br/> <br/>
+                    <p:commandButton value="Sim" icon="ui-icon-check" actionListener="#{usuariosTarefasBean.inativarAtivarUsuario}" 
+                                     onclick="PF('dlgAtivacao').hide()" update=":frmCriaUsuario:msgCriaUsuario, :users:tableUsers"/>
+                    <p:commandButton value="Não" type="button" icon="ui-icon-close" onclick="PF('dlgAtivacao').hide()"/>
+                </p:outputPanel>
+            </p:dialog>
+
+            <!--Diálogo Redefinir Senha-->
+            <p:dialog header="Confirmação" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgReiniciarSenha">
+                <p:outputPanel id="dlgInf2" style="text-align: center">
+                    <h:outputText value="Uma nova senha será gerada e enviada por e-mail ao usuário '#{usuariosTarefasBean.selectedUsuario.email}'. Deseja continuar?"/> <br/> <br/>
+                    <p:commandButton value="Sim" icon="ui-icon-check" actionListener="#{usuariosTarefasBean.redefinirSenha}" 
+                                     onclick="PF('dlgReiniciarSenha').hide()" update=":frmCriaUsuario:msgCriaUsuario, :users:tableUsers"/>
+                    <p:commandButton value="Não" type="button" icon="ui-icon-close" onclick="PF('dlgReiniciarSenha').hide()"/>
+                </p:outputPanel>
+            </p:dialog>
+
+            <!--Diálogo Exclusão-->
+            <p:dialog header="Confirmação" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgExcluir">
+                <p:outputPanel id="dlgInf3" style="text-align: center">
+                    <h:outputText value="Tem certeza que deseja excluir o usuário '#{usuariosTarefasBean.selectedUsuario.email}' ?"/> <br/> <br/>
+                    <p:commandButton value="Sim" icon="ui-icon-check" actionListener="#{usuariosTarefasBean.excluirUsuario}" 
+                                     onclick="PF('dlgExcluir').hide()" update=":frmCriaUsuario:msgCriaUsuario, :users:tableUsers"/>
+                    <p:commandButton value="Não" type="button" icon="ui-icon-close" onclick="PF('dlgExcluir').hide()"/>
+                </p:outputPanel>
+            </p:dialog>
+            
+            <!--Diálogo Edição Usuário-->
+            <p:dialog header="Alterar Empresas" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgEditar">
+                <p:outputPanel id="dlgInf4" style="text-align: center">
+                    <p:panelGrid columns="1">
+                        <f:facet name="header">Escolha as empresas</f:facet>
+                        
+                        <p:pickList value="#{usuariosTarefasBean.empresas}" var="empresas" itemLabel="#{empresas}" 
+                                    itemValue="#{empresas}" effect="drop" required="true"
+                                    requiredMessage="Informe pelo menos uma empresa."
+                                    styleClass="picklistCriaUsuario"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Salvar" icon="ui-icon-check" actionListener="#{usuariosTarefasBean.alterarEmpresas}" 
+                                     onclick="PF('dlgExcluir').hide()" update=":frmCriaUsuario:msgCriaUsuario, :users:tableUsers"/>
+                    <p:commandButton value="Cancelar" type="button" icon="ui-icon-close" onclick="PF('dlgEditar').hide()"/>
+                </p:outputPanel>
+            </p:dialog>
+
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
