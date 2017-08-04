@@ -62,8 +62,6 @@ public class UsuarioInterfaceImpl implements UsuarioInterface {
         List<Usuario> lista = null;
         try {
             session.beginTransaction();
-//            lista = session.createCriteria(Usuario.class)
-//                    .add(Restrictions.eq("tipo", "F")).list();
             lista = session.createQuery("From Usuario where tipo = 'F'").list();
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -75,13 +73,6 @@ public class UsuarioInterfaceImpl implements UsuarioInterface {
             }
         }
         return lista;
-//        
-//        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-//        session.beginTransaction();
-//        List<Usuario> lista = session.createCriteria(Usuario.class)
-//                .add(Restrictions.eq("tipo", "F")).list();
-//        session.getTransaction().commit();
-//        return lista;
 
     }
 
@@ -99,18 +90,10 @@ public class UsuarioInterfaceImpl implements UsuarioInterface {
             session.beginTransaction();
             session.save(usuario);
             session.getTransaction().commit();
-//        } catch (HibernateException e) {
-//            LOGGER.error(e.toString());
-//            session.getTransaction().rollback();
-//        } finally {
+        
             if (sessao) {
                 session.close();
             }
-//        }
-            
-//Linhas comentadas em 8/6/16, acrescentado throws hibernateexception neste 
-//método e na interface, afim de exibir mensagem para usuário do motivo do 
-//erro no cadastro
             
     }
 
