@@ -574,7 +574,7 @@ FORM FormGerarFluxoCaixa1
             geradoComSucesso = true;
         }
         
-        /* ... */
+        /* código continua :)  */
 		
 	}
 }
