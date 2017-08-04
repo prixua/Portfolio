@@ -7,8 +7,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="template/template.xhtml">
     <!--
-    OpÁ„o Metadata acrescentada para agilizar o carregamento da p·gina, assim
-    o picklist sÛ È populado no request HTTP, ou Ajax.
+    Op√ß√£o Metadata acrescentada para agilizar o carregamento da p√°gina, assim
+    o picklist s√≥ √© populado no request HTTP, ou Ajax.
     -->
     <f:metadata>
         <f:event type="preRenderView" listener="#{usuariosTarefasBean.carregaEmpresas()}"/>
@@ -21,13 +21,13 @@
             <p:growl id="msgCriaUsuario" />
             <p:panelGrid columns="2">
 
-                <f:facet name="header">Criar Usu·rio</f:facet>
+                <f:facet name="header">Criar Usu√°rio</f:facet>
 
 
                 <p:column><p:outputLabel value="E-mail:"/></p:column>
                 <p:column>
-                    <p:inputText id="email" validatorMessage="EndereÁo de e-mail inv·lido." 
-                                 required="true" requiredMessage="Informe um endereÁo de e-mail."
+                    <p:inputText id="email" validatorMessage="Endere√ßo de e-mail inv√°lido." 
+                                 required="true" requiredMessage="Informe um endere√ßo de e-mail."
                                  value="#{usuariosTarefasBean.email}">
                         <p:watermark for="email" value="example@example.com"/>
                         <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
@@ -38,7 +38,7 @@
                 <p:column>
                     <p:password id="senha" value="#{usuariosTarefasBean.senha}" feedback="true"
                                 promptLabel="Informe a senha" weakLabel="Fraco"
-                                goodLabel="MÈdio" strongLabel="Forte"
+                                goodLabel="M√©dio" strongLabel="Forte"
                                 required="true" requiredMessage="Informe a senha."/>
                 </p:column>
 
@@ -77,11 +77,11 @@
 
 
 
-        <!--Tabela de usu·rios cadastrados-->
+        <!--Tabela de usu√°rios cadastrados-->
         <h:form id="users">
             <p:dataTable var="users" value="#{usuariosTarefasBean.usuariosCadastrados}" 
-                         id="tableUsers" emptyMessage="Nenhum usu·rio cadastrado.">
-                <f:facet name="header">Usu·rios Cadastrados</f:facet>
+                         id="tableUsers" emptyMessage="Nenhum usu√°rio cadastrado.">
+                <f:facet name="header">Usu√°rios Cadastrados</f:facet>
 
                 <p:column headerText="E-mail" style="width: 20%">
                     <p:outputLabel value="#{users.email}"/>
@@ -99,17 +99,17 @@
                 </p:column>
 
                 <p:column headerText="Ativo">
-                    <p:outputLabel value="#{users.ativo eq 'S' ? 'SIM' : 'N√O'}"/>
+                    <p:outputLabel value="#{users.ativo eq 'S' ? 'SIM' : 'N√ÉO'}"/>
                 </p:column>
 
-                <p:column headerText="OpÁıes" colspan="3" style="text-align: center">
+                <p:column headerText="Op√ß√µes" colspan="3" style="text-align: center">
                     <p:commandButton id="btnEditar" 
                                      icon="ui-icon-pencil" 
                                      oncomplete="PF('dlgEditar').show()"  
                                      update=":users:dlgInf4">
                         <f:setPropertyActionListener target="#{usuariosTarefasBean.selectedUsuario}" value="#{users}" for="btnEditar"/> 
                     </p:commandButton>
-                    <p:tooltip for="btnEditar" showEffect="clip" value="Editar este usu·rio."/>
+                    <p:tooltip for="btnEditar" showEffect="clip" value="Editar este usu√°rio."/>
 
                     <p:commandButton id="btnInativar" 
                                      icon="ui-icon-cancel" 
@@ -117,7 +117,7 @@
                                      update=":users:dlgInf1">
                         <f:setPropertyActionListener target="#{usuariosTarefasBean.selectedUsuario}" value="#{users}" for="btnInativar"/> 
                     </p:commandButton>
-                    <p:tooltip for="btnInativar" showEffect="clip" value="Inativar/Ativar este usu·rio."/>
+                    <p:tooltip for="btnInativar" showEffect="clip" value="Inativar/Ativar este usu√°rio."/>
 
                     <p:commandButton id="btnResetarSenha" 
                                      icon="ui-icon-refresh" 
@@ -125,7 +125,7 @@
                                      update=":users:dlgInf2">
                         <f:setPropertyActionListener target="#{usuariosTarefasBean.selectedUsuario}" value="#{users}" for="btnResetarSenha"/> 
                     </p:commandButton>
-                    <p:tooltip for="btnResetarSenha" showEffect="clip" value="Redefinir a senha deste usu·rio."/>
+                    <p:tooltip for="btnResetarSenha" showEffect="clip" value="Redefinir a senha deste usu√°rio."/>
 
                     <p:commandButton id="btnExcluir" 
                                      icon="ui-icon-trash" 
@@ -134,42 +134,42 @@
                         <f:setPropertyActionListener target="#{usuariosTarefasBean.selectedUsuario}" value="#{users}" for="btnExcluir"/> 
                     </p:commandButton>
 
-                    <p:tooltip for="btnExcluir" showEffect="clip" value="Excluir este usu·rio."  />
+                    <p:tooltip for="btnExcluir" showEffect="clip" value="Excluir este usu√°rio."  />
                 </p:column>
             </p:dataTable>
 
 
-            <!--Di·logo AtivaÁ„o/InativaÁ„o-->
-            <p:dialog header="ConfirmaÁ„o" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgAtivacao">
+            <!--Di√°logo Ativa√ß√£o/Inativa√ß√£o-->
+            <p:dialog header="Confirma√ß√£o" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgAtivacao">
                 <p:outputPanel id="dlgInf1" style="text-align: center">
-                    <h:outputText value="O usu·rio '#{usuariosTarefasBean.selectedUsuario.email}' est· #{usuariosTarefasBean.selectedUsuario.ativo=='S'?'ATIVO':'INATIVO'}. Tem certeza que deseja #{usuariosTarefasBean.selectedUsuario.ativo=='S'?'INATIVAR':'ATIVAR'} este usu·rio?"/> <br/> <br/>
+                    <h:outputText value="O usu√°rio '#{usuariosTarefasBean.selectedUsuario.email}' est√° #{usuariosTarefasBean.selectedUsuario.ativo=='S'?'ATIVO':'INATIVO'}. Tem certeza que deseja #{usuariosTarefasBean.selectedUsuario.ativo=='S'?'INATIVAR':'ATIVAR'} este usu√°rio?"/> <br/> <br/>
                     <p:commandButton value="Sim" icon="ui-icon-check" actionListener="#{usuariosTarefasBean.inativarAtivarUsuario}" 
                                      onclick="PF('dlgAtivacao').hide()" update=":frmCriaUsuario:msgCriaUsuario, :users:tableUsers"/>
-                    <p:commandButton value="N„o" type="button" icon="ui-icon-close" onclick="PF('dlgAtivacao').hide()"/>
+                    <p:commandButton value="N√£o" type="button" icon="ui-icon-close" onclick="PF('dlgAtivacao').hide()"/>
                 </p:outputPanel>
             </p:dialog>
 
-            <!--Di·logo Redefinir Senha-->
-            <p:dialog header="ConfirmaÁ„o" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgReiniciarSenha">
+            <!--Di√°logo Redefinir Senha-->
+            <p:dialog header="Confirma√ß√£o" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgReiniciarSenha">
                 <p:outputPanel id="dlgInf2" style="text-align: center">
-                    <h:outputText value="Uma nova senha ser· gerada e enviada por e-mail ao usu·rio '#{usuariosTarefasBean.selectedUsuario.email}'. Deseja continuar?"/> <br/> <br/>
+                    <h:outputText value="Uma nova senha ser√° gerada e enviada por e-mail ao usu√°rio '#{usuariosTarefasBean.selectedUsuario.email}'. Deseja continuar?"/> <br/> <br/>
                     <p:commandButton value="Sim" icon="ui-icon-check" actionListener="#{usuariosTarefasBean.redefinirSenha}" 
                                      onclick="PF('dlgReiniciarSenha').hide()" update=":frmCriaUsuario:msgCriaUsuario, :users:tableUsers"/>
-                    <p:commandButton value="N„o" type="button" icon="ui-icon-close" onclick="PF('dlgReiniciarSenha').hide()"/>
+                    <p:commandButton value="N√£o" type="button" icon="ui-icon-close" onclick="PF('dlgReiniciarSenha').hide()"/>
                 </p:outputPanel>
             </p:dialog>
 
-            <!--Di·logo Exclus„o-->
-            <p:dialog header="ConfirmaÁ„o" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgExcluir">
+            <!--Di√°logo Exclus√£o-->
+            <p:dialog header="Confirma√ß√£o" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgExcluir">
                 <p:outputPanel id="dlgInf3" style="text-align: center">
-                    <h:outputText value="Tem certeza que deseja excluir o usu·rio '#{usuariosTarefasBean.selectedUsuario.email}' ?"/> <br/> <br/>
+                    <h:outputText value="Tem certeza que deseja excluir o usu√°rio '#{usuariosTarefasBean.selectedUsuario.email}' ?"/> <br/> <br/>
                     <p:commandButton value="Sim" icon="ui-icon-check" actionListener="#{usuariosTarefasBean.excluirUsuario}" 
                                      onclick="PF('dlgExcluir').hide()" update=":frmCriaUsuario:msgCriaUsuario, :users:tableUsers"/>
-                    <p:commandButton value="N„o" type="button" icon="ui-icon-close" onclick="PF('dlgExcluir').hide()"/>
+                    <p:commandButton value="N√£o" type="button" icon="ui-icon-close" onclick="PF('dlgExcluir').hide()"/>
                 </p:outputPanel>
             </p:dialog>
             
-            <!--Di·logo EdiÁ„o Usu·rio-->
+            <!--Di√°logo Edi√ß√£o Usu√°rio-->
             <p:dialog header="Alterar Empresas" modal="false" showEffect="drop" hideEffect="drop" resizable="false" widgetVar="dlgEditar">
                 <p:outputPanel id="dlgInf4" style="text-align: center">
                     <p:panelGrid columns="1">
