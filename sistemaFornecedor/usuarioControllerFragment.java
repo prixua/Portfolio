@@ -1,108 +1,166 @@
-package br.com.fornecedores.controller;
+package br.com.fornecedores.dao;
 
-import br.com.fornecedores.dao.UsuarioInterface;
-import br.com.fornecedores.dao.UsuarioInterfaceImpl;
 import br.com.fornecedores.model.Usuario;
-import br.com.fornecedores.util.FacesUtil;
-import java.util.Iterator;
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.codec.digest.DigestUtils;
+import br.com.fornecedores.util.HibernateUtil;
+import java.util.List;
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
-@ManagedBean
-@SessionScoped
-public class UsuarioBean {
+public class UsuarioInterfaceImpl implements UsuarioInterface {
 
-    public static final String USER_SESSION_KEY = "user";
-    private String email;
-    private String senha;
-    private String tipo;
+    private static final Logger LOGGER = Logger.getLogger(UsuarioInterfaceImpl.class);
 
-    public String getEmail() {
-        return email;
-    }
+    @Override
+    public Usuario buscarUsuario(String email, String senha) {
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        boolean sessao = false;
+        if (session == null) {
+            session = HibernateUtil.getSessionFactory().openSession();
+            sessao = true;
+        }
 
-    public String getSenha() {
-        return senha;
-    }
+        Usuario user = null;
 
-    public void setSenha(String senha) {
-        this.senha = senha.trim();
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public String validarUsuario() {
-        FacesContext context = FacesContext.getCurrentInstance();
-
-        Usuario user = getUsuario();
-
-        if (user != null) {
-            if (!user.getSenha().equals(DigestUtils.sha512Hex(senha))) {
-                FacesUtil.setMensagem(FacesMessage.SEVERITY_ERROR,
-                        "A senha informada está incorreta.", null, false);
-                return null;
-            } else if (user.getAtivo().equals("N")) {
-                FacesUtil.setMensagem(FacesMessage.SEVERITY_ERROR,
-                        "Este usuário não está ativo.", null, false);
-                return null;
+        try {
+            session.beginTransaction();
+            if (senha != null) {
+                user = (Usuario) session.createCriteria(Usuario.class)
+                        .add(Restrictions.eq("email", email))
+                        .add(Restrictions.eq("senha", senha)).uniqueResult();
+            } else {
+                user = (Usuario) session.createCriteria(Usuario.class)
+                        .add(Restrictions.eq("email", email)).uniqueResult();
             }
-
-            context.getExternalContext().getSessionMap().put(USER_SESSION_KEY, user);
-            return "index.jsf?faces-redirect=true";
-
-        } else {
-            FacesUtil.setMensagem(FacesMessage.SEVERITY_ERROR,
-                    "Usuário '" + email + "' não existe ou senha informada está incorreta.", null, false);
-            return null;
-        }
-    }
-
-    public Usuario getUsuario() {
-        Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("user");
-        if (user != null) {
+            session.getTransaction().commit();
             return user;
-        } else {
-            UsuarioInterface dao = new UsuarioInterfaceImpl();
-            return (Usuario) dao.buscarUsuario(email, DigestUtils.sha512Hex(senha));
+        } catch (Exception e) {
+            LOGGER.error(e.toString());
+        } finally {
+            if (sessao) {
+                session.close();
+            }
         }
+        return null;
     }
 
     /**
      *
-     * @return Destroi sessão e direciona para página de login
+     * @return lista de usuários do tipo <code>Fornecedor</code>
      */
-    public String logout() {
-        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-        if (session != null) {
-            session.invalidate();
+    @Override
+    public List<Usuario> list() {
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        boolean sessao = false;
+        if (session == null) {
+            session = HibernateUtil.getSessionFactory().openSession();
+            sessao = true;
         }
-        return "login.jsf?faces-redirect=true";
+        List<Usuario> lista = null;
+        try {
+            session.beginTransaction();
+//            lista = session.createCriteria(Usuario.class)
+//                    .add(Restrictions.eq("tipo", "F")).list();
+            lista = session.createQuery("From Usuario where tipo = 'F'").list();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            LOGGER.error(e.toString());
+            session.getTransaction().rollback();
+        } finally {
+            if (sessao) {
+                session.close();
+            }
+        }
+        return lista;
+//        
+//        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+//        session.beginTransaction();
+//        List<Usuario> lista = session.createCriteria(Usuario.class)
+//                .add(Restrictions.eq("tipo", "F")).list();
+//        session.getTransaction().commit();
+//        return lista;
+
     }
 
-    public String getUsuarioLogado() {
-        Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("user");
-        return user.getEmail();
+    @Override
+    public void adicionarUsuario(Usuario usuario) throws HibernateException{
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        boolean sessao = false;
+        if (session == null) {
+            session = HibernateUtil.getSessionFactory().openSession();
+            sessao = true;
+        }
+
+//        try {
+            session.beginTransaction();
+            session.save(usuario);
+            session.getTransaction().commit();
+//        } catch (HibernateException e) {
+//            LOGGER.error(e.toString());
+//            session.getTransaction().rollback();
+//        } finally {
+            if (sessao) {
+                session.close();
+            }
+//        }
+            
+//Linhas comentadas em 8/6/16, acrescentado throws hibernateexception neste 
+//método e na interface, afim de exibir mensagem para usuário do motivo do 
+//erro no cadastro
+            
     }
-    
-    public void limpaMensagens(){
-        Iterator<FacesMessage> msgs = FacesContext.getCurrentInstance().getMessages();
-        while (msgs.hasNext()) {
-            msgs.next();
-            msgs.remove();
-        } 
+
+    @Override
+    public void alterarUsuario(Usuario usuario) {
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        boolean sessao = false;
+        if (session == null) {
+            session = HibernateUtil.getSessionFactory().openSession();
+            sessao = true;
+        }
+
+        try {
+            session.beginTransaction();
+            session.update(usuario);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            LOGGER.error(e.toString());
+            session.getTransaction().rollback();
+        } finally {
+            if (sessao) {
+                session.close();
+            }
+        }
+
+
+    }
+
+    @Override
+    public void excluirUsuario(Usuario usuario) {
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        boolean sessao = false;
+        if (session == null) {
+            session = HibernateUtil.getSessionFactory().openSession();
+            sessao = true;
+        }
+
+        try {
+            session.beginTransaction();
+            session.delete(usuario);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            LOGGER.error(e.toString());
+            session.getTransaction().rollback();
+        } finally {
+            if (sessao) {
+                session.close();
+            }
+        }
     }
 }
