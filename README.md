@@ -1,2 +1,2 @@
 # Portfolio
-# Apresenta as experiências com as ferramentas
+# Apresenta fragmentos das experiências com desenvolvimento
